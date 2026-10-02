@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 dotenv.config();
+import userRoutes from "./routes/user.route.js";
+import interviewRoutes from "./routes/interview.route.js";
 
 const app = express();
 
@@ -14,6 +16,9 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.send("backend running..");
 });
+
+app.use("api/auth", userRoutes);
+app.use("/api/interviews", interviewRoutes);
 
 mongoose
   .connect(process.env.MONGO_URL)

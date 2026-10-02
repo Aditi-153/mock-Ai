@@ -5,7 +5,7 @@ import {
   loginUser,
   userProfile,
   userLogout,
-} from "../controllers/auth.controller.js";
+} from "../controllers/user.controller.js";
 
 import { userAuth } from "../middleware/auth.js";
 
