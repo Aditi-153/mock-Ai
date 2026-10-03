@@ -6,9 +6,14 @@ dotenv.config();
 import userRoutes from "./routes/user.route.js";
 import interviewRoutes from "./routes/interview.route.js";
 
+
+dotenv.config();
+console.log(process.env.JWT_SECRET_KEY);
+
+
 const app = express();
 
-const PORT = process.env.POST || 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cookieParser());
@@ -17,7 +22,7 @@ app.get("/", (req, res) => {
   res.send("backend running..");
 });
 
-app.use("api/auth", userRoutes);
+app.use("/api/auth", userRoutes);
 app.use("/api/interviews", interviewRoutes);
 
 mongoose
