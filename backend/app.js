@@ -8,7 +8,6 @@ import interviewRoutes from "./routes/interview.route.js";
 
 
 dotenv.config();
-console.log(process.env.JWT_SECRET_KEY);
 
 
 const app = express();
