@@ -187,14 +187,14 @@ export const completeInterview = async (req, res) => {
     }
 
     const unansweredQuestions = interview.questions.filter(
-  (question) => !question.answer?.trim(),
-);
+      (question) => !question.answer?.trim(),
+    );
 
-if (unansweredQuestions.length > 0) {
-  return res.status(400).json({
-    message: "Please answer all questions before completing the interview",
-  });
-}
+    if (unansweredQuestions.length > 0) {
+      return res.status(400).json({
+        message: "Please answer all questions before completing the interview",
+      });
+    }
 
     const messages = [];
 
@@ -232,9 +232,9 @@ if (unansweredQuestions.length > 0) {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message : "failed to complete interview",
-      error : error.message,
-    })
+      message: "failed to complete interview",
+      error: error.message,
+    });
   }
 };
 
