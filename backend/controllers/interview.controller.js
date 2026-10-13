@@ -215,10 +215,21 @@ export const completeInterview = async (req, res) => {
     });
 
     const result = await calculateResult(messages);
+    interview.questions.forEach((question, index) => {
+      const evaluation = result.questionEvaluations.find(
+        (item) => item.questionIndex === index,
+      );
 
+      if (evaluation) {
+        question.score = evaluation.score;
+        question.feedback = evaluation.feedback;
+      }
+    });
     interview.score = result.score * 10;
+    interview.strengths = result.strengths;
+    interview.weaknesses = result.weaknesses;
+    interview.suggestions = result.suggestions;
     interview.status = "completed";
-    interview.suggestions = [result.feedback];
 
     await interview.save();
 
@@ -226,7 +237,12 @@ export const completeInterview = async (req, res) => {
       message: "interview completed successfully",
       result: {
         score: result.score,
+        scoreOutOf100: interview.score,
         feedback: result.feedback,
+        questionEvaluations: result.questionEvaluations,
+        strengths: result.strengths,
+        weaknesses: result.weaknesses,
+        suggestions: result.suggestions,
       },
     });
   } catch (error) {
@@ -240,7 +256,7 @@ export const completeInterview = async (req, res) => {
 
 export const updateQuestionAnswer = async (req, res) => {
   try {
-    const { id, questionId } = req.params;
+    const { id, questionId } = req.params; //interview id and que id
     const { answer } = req.body;
 
     if (answer === undefined) {
@@ -266,7 +282,7 @@ export const updateQuestionAnswer = async (req, res) => {
       });
     }
 
-    const question = interview.questions.id(questionId);
+    const question = interview.questions.id(questionId); //find que
 
     if (!question) {
       return res.status(404).json({
@@ -274,7 +290,7 @@ export const updateQuestionAnswer = async (req, res) => {
       });
     }
 
-    question.answer = answer;
+    question.answer = answer; //upddate answer
 
     await interview.save();
 
