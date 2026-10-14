@@ -48,6 +48,8 @@ export const registerUser = async (req, res) => {
       secure: false,
     });
 
+    
+
     return res.status(201).json({
       message: "User created successfully!",
       user: {

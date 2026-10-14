@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { lowercase } from "zod";
 
 export const userSchema = new mongoose.Schema(
   {
@@ -13,6 +14,7 @@ export const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
+      lowercase : true,
     },
 
     age: {

@@ -1,4 +1,5 @@
 import Interview from "../models/interview.model.js";
+import { validateResult } from "../utils/validateResult.js";
 
 import { calculateResult } from "../services/result.service.js";
 
@@ -100,37 +101,53 @@ export const updateInterview = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { role, experience, difficulty, interviewType } = req.body;
-
-    const updates = {};
-    if (role !== undefined) updates.role = role;
-    if (experience !== undefined) updates.experience = experience;
-    if (difficulty !== undefined) updates.difficulty = difficulty;
-    if (interviewType !== undefined) updates.interviewType = interviewType;
-
-    const interview = await Interview.findOneAndUpdate(
-      {
-        _id: id,
-        userId: req.user._id,
-      },
-      { $set: updates },
-      { new: true, runValidators: true },
-    );
+    const interview = await Interview.findOne({
+      _id: id,
+      userId: req.user._id,
+    });
 
     if (!interview) {
       return res.status(404).json({
-        message: "interview not found",
+        message: "Interview not found",
       });
     }
 
+    if (interview.status === "completed") {
+      return res.status(400).json({
+        message: "Completed interviews cannot be modified",
+      });
+    }
+
+    const { role, experience, difficulty, interviewType } = req.body;
+
+    const updates = {};
+
+    if (role !== undefined) updates.role = role;
+    if (experience !== undefined) updates.experience = experience;
+    if (difficulty !== undefined) updates.difficulty = difficulty;
+    if (interviewType !== undefined) {
+      updates.interviewType = interviewType;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        message: "No valid fields to update",
+      });
+    }
+
+    Object.assign(interview, updates);
+
+    await interview.save();
+
     return res.status(200).json({
-      message: "interview updated successfully",
+      message: "Interview updated successfully",
       interview,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Update interview error:", error);
+
     return res.status(500).json({
-      message: "failed to update interview",
+      message: "Failed to update interview",
     });
   }
 };
@@ -156,7 +173,7 @@ export const deleteInterview = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: "failed to update interview",
+      message: "failed to delete interview",
       error: error.message,
     });
   }
@@ -218,6 +235,11 @@ export const completeInterview = async (req, res) => {
     });
 
     const result = await calculateResult(messages);
+    if (!validateResult(result, interview.questions.length)) {
+      return res.status(500).json({
+        message: "AI returned an invalid evaluation",
+      });
+    }
     interview.questions.forEach((question, index) => {
       const evaluation = result.questionEvaluations.find(
         (item) => item.questionIndex === index,
@@ -265,6 +287,12 @@ export const updateQuestionAnswer = async (req, res) => {
     if (answer === undefined) {
       return res.status(400).json({
         message: "Answer is required",
+      });
+    }
+
+    if (typeof answer !== "string" || !answer.trim()) {
+      return res.status(400).json({
+        message: "A valid answer is required",
       });
     }
 
