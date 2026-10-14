@@ -100,18 +100,21 @@ export const updateInterview = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const { role, experience, difficulty, interviewType } = req.body;
+
+    const updates = {};
+    if (role !== undefined) updates.role = role;
+    if (experience !== undefined) updates.experience = experience;
+    if (difficulty !== undefined) updates.difficulty = difficulty;
+    if (interviewType !== undefined) updates.interviewType = interviewType;
+
     const interview = await Interview.findOneAndUpdate(
       {
         _id: id,
         userId: req.user._id,
       },
-      {
-        $set: req.body,
-      },
-      {
-        new: true,
-        runValidators: true,
-      },
+      { $set: updates },
+      { new: true, runValidators: true },
     );
 
     if (!interview) {

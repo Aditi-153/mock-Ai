@@ -5,10 +5,9 @@ import cookieParser from "cookie-parser";
 dotenv.config();
 import userRoutes from "./routes/user.route.js";
 import interviewRoutes from "./routes/interview.route.js";
-
+import cors from "cors";
 
 dotenv.config();
-
 
 const app = express();
 
@@ -16,6 +15,12 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http:localhosr:5173",
+    credentials: true,
+  }),
+);
 
 app.get("/", (req, res) => {
   res.send("backend running..");
