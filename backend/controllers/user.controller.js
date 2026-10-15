@@ -48,8 +48,6 @@ export const registerUser = async (req, res) => {
       secure: false,
     });
 
-    
-
     return res.status(201).json({
       message: "User created successfully!",
       user: {
@@ -68,11 +66,12 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { password } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
 
     if (!email || !password) {
       return res.status(400).json({
-        message: "Fields are empty",
+        message: "Please enter email and password",
       });
     }
 
@@ -80,7 +79,7 @@ export const loginUser = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        message: "User does not exist",
+        message: "user does not exist",
       });
     }
 
@@ -92,15 +91,9 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
-      {
-        id: user._id,
-      },
-      process.env.JWT_SECRET_KEY,
-      {
-        expiresIn: "1d",
-      },
-    );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1d",
+    });
 
     res.cookie("userToken", token, {
       httpOnly: true,
@@ -108,18 +101,18 @@ export const loginUser = async (req, res) => {
       secure: false,
     });
 
-    res.status(200).json({
-      message: "Login successfully",
+    return res.status(200).json({
+      message: "Login successful",
       user: {
-        name: user.name,
         id: user._id,
         email: user.email,
       },
     });
   } catch (error) {
+    console.error("Login error:", error.message);
+
     return res.status(500).json({
       message: "Login failed",
-      error: error.message,
     });
   }
 };
