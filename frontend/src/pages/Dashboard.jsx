@@ -19,6 +19,9 @@ function Dashboard() {
           "failed to fetch Interview",
           error.response?.data || error.message,
         );
+        toast.error(
+          error.response?.data?.message || "Failed to fetch interviews",
+        );
       } finally {
         setLoading(false);
       }
@@ -33,9 +36,8 @@ function Dashboard() {
       toast.success("Logged out successfully");
       navigate("/login");
     } catch (error) {
-      toast.error(error.response?.data?.message || "logut failed");
+      toast.error(error.response?.data?.message || "Logout failed");
     }
-    navigate("/login");
   };
 
   const completedInterview = interviews.filter(
@@ -165,7 +167,8 @@ function Dashboard() {
               {interviews.slice(0, 5).map((interview) => (
                 <div
                   key={interview._id}
-                  className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-5 sm:flex-row sm:items-center"
+                  onClick={() => navigate(`/interview/${interview._id}`)}
+                  className="flex cursor-pointer flex-col justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-5 sm:flex-row sm:items-center"
                 >
                   <div>
                     <h3 className="font-semibold text-white">
