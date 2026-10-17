@@ -6,6 +6,7 @@ dotenv.config();
 import userRoutes from "./routes/user.route.js";
 import interviewRoutes from "./routes/interview.route.js";
 import cors from "cors";
+import voiceRoute from "./routes/voice.routes.js";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", userRoutes);
 app.use("/api/interviews", interviewRoutes);
+app.use("/api/voice", voiceRoute);
 
 mongoose
   .connect(process.env.MONGO_URL)
