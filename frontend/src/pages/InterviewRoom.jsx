@@ -1,9 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function InterviewRoom() {
   const [question, setQuestion] = useState("explain.......");
 
   const [isRecording, setIsRecording] = useState(false);
+  const [devices, setDevices] = useState([]);
+  const [selectedDevices, setSelectedDevices] = useState("");
   const [audioURL, setAudioURL] = useState("");
 
   const mediaRecorderRef = useRef(null);
@@ -13,7 +15,7 @@ function InterviewRoom() {
   const speakQuestion = () => {};
   const startRecording = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
+      audio: selectedDevices ? { deviceId: { exact: selectedDevices } } : true,
     });
 
     const mediaRecorder = new MediaRecorder(stream);
@@ -32,15 +34,32 @@ function InterviewRoom() {
         type: mediaRecorder.mimeType,
       });
 
+      console.log(audioBlob);
+      console.log(mediaRecorder.mimeType);
+
       const url = URL.createObjectURL(audioBlob);
       setAudioURL(url);
 
       stream.getTracks().forEach((track) => track.stop());
     };
 
-    mediaRecorder.start();
+    mediaRecorder.start(1000);
     setIsRecording(true);
   };
+
+  useEffect(() => {
+    const getMicrophone = async () => {
+      const allDevices = await navigator.mediaDevices.enumerateDevices();
+
+      const microphones = allDevices.filter(
+        (device) => device.kind === "audioinput",
+      );
+
+      setDevices(microphones);
+    };
+
+    getMicrophone();
+  }, []);
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
@@ -52,6 +71,17 @@ function InterviewRoom() {
       <h1>Interview Room</h1>
 
       <h2>{question}</h2>
+
+      <select
+        value={selectedDevices}
+        onChange={(e) => setSelectedDevices(e.target.value)}
+      >
+        {devices.map((device, index) => (
+          <option key={device.deviceId} value={device.deviceId}>
+            {device.label || `microphone ${index + 1}`}
+          </option>
+        ))}
+      </select>
 
       <button onClick={startRecording} disabled={isRecording}>
         Start Recording
