@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import InterviewSetup from "./pages/InterviewSetup";
+import InterviewRoom from "./pages/InterviewRoom";
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/interview/:id" element={<InterviewSetup />} />
-
+        <Route path="/test-interview" element={<InterviewRoom />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
