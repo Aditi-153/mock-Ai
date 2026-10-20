@@ -16,8 +16,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/interview/:id" element={<InterviewSetup />} />
-        <Route path="/test-interview" element={<InterviewRoom />} />
+        <Route path="/interview" element={<InterviewSetup />} />
+        <Route path="/interview/:id" element={<InterviewRoom />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
